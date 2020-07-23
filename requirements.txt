@@ -1,0 +1,3 @@
+sorl-thumbnail
+django-oscar
+pycountry
