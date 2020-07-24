@@ -29,6 +29,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+OSCAR_DEFAULT_CURRENCY = 'RUB'
+
+OSCAR_REQUIRED_ADDRESS_FIELDS = ('first_name', 'last_name', 'line1',  'postcode')
+
 
 # Application definition
 
@@ -48,7 +52,8 @@ INSTALLED_APPS = [
     #'oscar.apps.checkout.apps.CheckoutConfig',
     'myapps.checkout.apps.CheckoutConfig',
     'oscar.apps.address.apps.AddressConfig',
-    'oscar.apps.shipping.apps.ShippingConfig',
+    #'oscar.apps.shipping.apps.ShippingConfig',
+    'myapps.shipping.apps.ShippingConfig',
     'oscar.apps.catalogue.apps.CatalogueConfig',
     'oscar.apps.catalogue.reviews.apps.CatalogueReviewsConfig',
     'oscar.apps.communication.apps.CommunicationConfig',
