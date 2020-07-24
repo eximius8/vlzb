@@ -5,4 +5,10 @@ from . import methods
 
 
 class Repository(repository.Repository):
-    methods = (methods.Standard())#, methods.Express())
+
+    methods = (methods.Ultrafast(), methods.Standard(), methods.Express())
+
+    def get_available_shipping_methods(self, basket, user=None, shipping_addr=None, request=None, **kwargs):
+
+        methods = (methods.Ultrafast(), methods.Standard(), methods.Express())
+        return methods

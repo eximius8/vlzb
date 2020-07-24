@@ -2,4 +2,4 @@ from oscar.apps.checkout.views import ShippingMethodView as CoreShippingMethodVi
 
 
 class ShippingMethodView(CoreShippingMethodView):
-    pass
+    template_name = 'offer/new_list.html'
