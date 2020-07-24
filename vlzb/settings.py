@@ -88,7 +88,22 @@ INSTALLED_APPS = [
     'django_tables2',
 ]
 
+
+
+
 SITE_ID = 1
+
+OSCAR_DASHBOARD_NAVIGATION += [
+    {
+        'label': 'Shipping',
+        'children': [
+            {
+                'label': 'Shipping',
+                'url_name': 'dashboard:shipping-method-list',
+            },
+         ]
+    },
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -190,3 +205,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
