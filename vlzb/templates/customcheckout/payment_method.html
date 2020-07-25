@@ -15,10 +15,14 @@
     {% endif %}
 
     <form action="" method="post">
+    
         {% csrf_token %}
-
         {% if form.payment_method.errors %}{{ form.payment_method.errors }}{% endif %}
-        <div class="radio">
+
+        {{ form }}
+
+        
+        {% comment %} <div class="radio">
             <label for="id_payment_method_0">
                 <input id="id_payment_method_0" name="payment_method" type="radio" value="cod" required="">{% trans "Cash on delivery" %}
             </label>
@@ -27,7 +31,7 @@
             <label for="id_payment_method_1">
                 <input id="id_payment_method_1" name="payment_method" type="radio" value="custom_payment" required="">{% trans "Credit / Debit Card" %}
             </label>
-        </div>
+        </div> {% endcomment %}
         <p><button type="submit" class="btn btn-large btn-primary">{% trans "Continue to confirmation" %}</button>
 
     </form>

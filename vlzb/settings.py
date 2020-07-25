@@ -89,8 +89,9 @@ INSTALLED_APPS = [
 ]
 
 OSCAR_PAYMENT_METHODS = (
-    ('cod', 'Cash on delivery'),
+    ('codsad', 'Cash on delivery'),
     ('custom_payment', 'Credit / Debit card'),
+    ('cusdsadstom_payment', 'Cfsdafdasredidasdt / Debit card'),
 )
 
 
