@@ -1,4 +1,6 @@
 from oscar.apps.checkout.views import ShippingMethodView as CoreShippingMethodView
+from django.conf import settings
+from django.views.generic import FormView
 
 
 # class ShippingMethodView(CoreShippingMethodView):
@@ -7,15 +9,38 @@ from oscar.apps.checkout.views import ShippingMethodView as CoreShippingMethodVi
 from oscar.apps.checkout import views
 from oscar.apps.payment import models
 
+from . import forms
+
+from django.urls import reverse, reverse_lazy
+
 
 class PaymentMethodView(views.PaymentMethodView):
+    
+    template_name = "customcheckout/payment_method.html"
+    step = 'payment-method'
+    form_class = forms.PaymentMethodForm
+    success_url = reverse_lazy('checkout:payment-details')
 
+    pre_conditions = [
+        'check_basket_is_not_empty',
+        'check_basket_is_valid',
+        'check_user_email_is_captured',
+        'check_shipping_data_is_captured',
+        'check_payment_data_is_captured',
+    ]
+    skip_conditions = ['skip_unless_payment_is_required']
 
     def get(self, request, *args, **kwargs):
-        # By default we redirect straight onto the payment details view. Shops
-        # that require a choice of payment method may want to override this
-        # method to implement their specific logic.
-        return self.get_success_response('gfdgfd')
+        # if only single payment method, store that
+        # and then follow default (redirect to preview)
+        # else show payment method choice form
+        if len(settings.OSCAR_PAYMENT_METHODS) == 1:
+            self.checkout_session.pay_by(settings.OSCAR_PAYMENT_METHODS[0][0])
+            return redirect(self.get_success_url())
+        else:
+            return FormView.get(self, request, *args, **kwargs)
+
+
 
 # Subclass the core Oscar view so we can customise
 class PaymentDetailsView(views.PaymentMethodView):
