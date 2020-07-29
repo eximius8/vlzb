@@ -28,5 +28,5 @@ class PaymentMethodForm(forms.Form):
     )
 
 
-def get_payment_method_display(payment_method):
-    return dict(settings.OSCAR_PAYMENT_METHODS).get(payment_method)
+    def get_payment_method_display(payment_method):
+        return dict(settings.OSCAR_PAYMENT_METHODS).get(payment_method)

@@ -85,8 +85,10 @@ INSTALLED_APPS = [
     'haystack',
     'treebeard',
     'sorl.thumbnail',
-    'django_tables2',
+    'django_tables2',    
 ]
+
+
 
 OSCAR_PAYMENT_METHODS = (
     ('cod', 'Cash on delivery'),
