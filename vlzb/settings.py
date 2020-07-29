@@ -78,7 +78,7 @@ INSTALLED_APPS = [
     'oscar.apps.dashboard.reviews.apps.ReviewsDashboardConfig',
     'oscar.apps.dashboard.vouchers.apps.VouchersDashboardConfig',
     'oscar.apps.dashboard.communications.apps.CommunicationsDashboardConfig',
-    'oscar.apps.dashboard.shipping.apps.ShippingDashboardConfig',
+    'oscar.apps.dashboard.shipping',
 
     # 3rd-party apps that oscar depends on
     'widget_tweaks',
@@ -108,6 +108,14 @@ OSCAR_DASHBOARD_NAVIGATION += [
          ]
     },
 ]
+
+OSCAR_INITIAL_ORDER_STATUS = 'Pending'
+OSCAR_INITIAL_LINE_STATUS = 'Pending'
+OSCAR_ORDER_STATUS_PIPELINE = {
+                                'Pending': ('Being processed', 'Cancelled',),
+                                'Being processed': ('Processed', 'Cancelled',),
+                                'Cancelled': (),
+                                }
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
