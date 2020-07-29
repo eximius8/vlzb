@@ -1,6 +1,20 @@
 from django import forms
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
+from oscar.apps.checkout.forms import ShippingAddressForm as OldShippingAddressForm
+from oscar.core.loading import get_model
+
+class  ShippingAddressForm(OldShippingAddressForm):
+
+    class Meta:
+        model = get_model('order', 'shippingaddress')
+        fields = [
+            'first_name', 'last_name',
+            'line1', 'line2', #'line3', 'line4',
+            #'state', 
+            'postcode', 'country',
+            'phone_number', 'notes',
+        ]
 
 
 class PaymentMethodForm(forms.Form):
