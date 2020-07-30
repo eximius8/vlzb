@@ -16,6 +16,8 @@ Including another URLconf
 from django.apps import apps
 from django.urls import include, path
 from django.contrib import admin
+#from oscar.apps import shop
+#from paypal.express.dashboard.app import application
 
 urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),
@@ -23,7 +25,16 @@ urlpatterns = [
     # The Django admin is not officially supported; expect breakage.
     # Nonetheless, it's often useful for debugging.
 
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),   
 
-    path('', include(apps.get_app_config('oscar').urls[0])),
+    # paypal
+    path('checkout/paypal/', include('paypal.express.urls')),
+    # Optional paypal
+    #path(r'^dashboard/paypal/express/', application.urls),
+
+
+
+    path('', include(apps.get_app_config('oscar').urls[0])),   
 ]
+
+

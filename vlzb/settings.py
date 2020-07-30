@@ -85,9 +85,18 @@ INSTALLED_APPS = [
     'haystack',
     'treebeard',
     'sorl.thumbnail',
-    'django_tables2',    
+    'django_tables2',
+
+    'paypal',
 ]
 
+PAYPAL_API_USERNAME = 'sb-ligll1252341_api1.business.example.com'
+PAYPAL_API_PASSWORD = '9SLFHQYJCJ484KTJ'
+PAYPAL_API_SIGNATURE = 'AErUJZx.Btq3.dnDQaYLyX-ypnZAA57tWRImRvTXn1KdF56UCo7aBOtk'
+
+PAYPAL_SANDBOX_MODE = True
+
+PAYPAL_CURRENCY = 'RUB'
 
 
 OSCAR_PAYMENT_METHODS = (
@@ -110,6 +119,19 @@ OSCAR_DASHBOARD_NAVIGATION += [
          ]
     },
 ]
+
+from django.utils.translation import ugettext_lazy as _
+# OSCAR_DASHBOARD_NAVIGATION.append(
+#     {
+#         'label': _('PayPal'),
+#         'icon': 'icon-globe',
+#         'children': [
+#             {
+#                 'label': _('Express transactions'),
+#                 'url_name': 'paypal-express-list',
+#             },
+#         ]
+#     })
 
 OSCAR_INITIAL_ORDER_STATUS = 'Pending'
 OSCAR_INITIAL_LINE_STATUS = 'Pending'
@@ -148,6 +170,7 @@ HAYSTACK_CONNECTIONS = {
 ROOT_URLCONF = 'vlzb.urls'
 
 
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -170,6 +193,10 @@ TEMPLATES = [
 ]
 
 
+# TEMPLATE_DIRS = (
+#     location('templates'),
+#     os.path.join(os.path.dirname(__file__),'templates'),
+# )
 
 WSGI_APPLICATION = 'vlzb.wsgi.application'
 
