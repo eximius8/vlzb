@@ -23,10 +23,9 @@ class PaymentDetailsView(views.PaymentDetailsView):
         # Override method so the bankcard and billing address forms can be
         # added to the context.
         ctx = super(PaymentDetailsView, self).get_context_data(**kwargs)
-        ctx['bankcard_form'] = kwargs.get(
-            'bankcard_form', forms.BankcardForm())
-        ctx['billing_address_form'] = kwargs.get(
-            'billing_address_form', forms.BillingAddressForm())
+        ctx['bankcard_form'] = kwargs.get('bankcard_form', forms.BankcardForm())
+        ctx['prev']=self.preview
+        #ctx['billing_address_form'] = kwargs.get('billing_address_form', forms.BillingAddressForm())
         return ctx
 
     def post(self, request, *args, **kwargs):
