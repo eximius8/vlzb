@@ -23,7 +23,7 @@ class PaymentDetailsView(views.PaymentDetailsView):
         # Override method so the bankcard and billing address forms can be
         # added to the context.
         ctx = super(PaymentDetailsView, self).get_context_data(**kwargs)
-        ctx['bankcard_form'] = kwargs.get('bankcard_form', forms.BankcardForm())
+        #ctx['bankcard_form'] = kwargs.get('bankcard_form', forms.BankcardForm())
         ctx['prev']=self.preview
         #ctx['billing_address_form'] = kwargs.get('billing_address_form', forms.BillingAddressForm())
         return ctx
@@ -36,37 +36,38 @@ class PaymentDetailsView(views.PaymentDetailsView):
         if request.POST.get('action', '') == 'place_order':
             return self.do_place_order(request)
 
-        bankcard_form = forms.BankcardForm(request.POST)
-        billing_address_form = forms.BillingAddressForm(request.POST)
-        if not all([bankcard_form.is_valid(),
-                    billing_address_form.is_valid()]):
-            # Form validation failed, render page again with errors
-            self.preview = False
-            ctx = self.get_context_data(
-                bankcard_form=bankcard_form,
-                billing_address_form=billing_address_form)
-            return self.render_to_response(ctx)
+        #bankcard_form = forms.BankcardForm(request.POST)
+        #billing_address_form = forms.BillingAddressForm(request.POST)
+        self.preview = False
+        # if not all([bankcard_form.is_valid(),
+        #             billing_address_form.is_valid()]):
+        #     # Form validation failed, render page again with errors
+        #     self.preview = False
+        #     ctx = self.get_context_data(
+        #         bankcard_form=bankcard_form,
+        #         billing_address_form=billing_address_form)
+        #     return self.render_to_response(ctx)
 
         # Render preview with bankcard and billing address details hidden
-        return self.render_preview(request,
-                                   bankcard_form=bankcard_form,
-                                   billing_address_form=billing_address_form)
+        return self.render_preview(request,)
+                                   #bankcard_form=bankcard_form,
+                                   #billing_address_form=billing_address_form)
 
     def do_place_order(self, request):
         # Helper method to check that the hidden forms wasn't tinkered
         # with.
-        bankcard_form = forms.BankcardForm(request.POST)
-        billing_address_form = forms.BillingAddressForm(request.POST)
-        if not all([bankcard_form.is_valid(),
-                    billing_address_form.is_valid()]):
+    #    bankcard_form = forms.BankcardForm(request.POST)
+    #    billing_address_form = forms.BillingAddressForm(request.POST)
+        if False:#not all([bankcard_form.is_valid(),
+                #    billing_address_form.is_valid()]):
             messages.error(request, "Invalid submission")
             return HttpResponseRedirect(reverse('checkout:payment-details'))
 
         # Attempt to submit the order, passing the bankcard object so that it
         # gets passed back to the 'handle_payment' method below.
         submission = self.build_submission()
-        submission['payment_kwargs']['bankcard'] = bankcard_form.bankcard
-        submission['payment_kwargs']['billing_address'] = billing_address_form.cleaned_data
+        #submission['payment_kwargs']['bankcard'] = bankcard_form.bankcard
+        #submission['payment_kwargs']['billing_address'] = billing_address_form.cleaned_data
         return self.submit(**submission)
 
     def handle_payment(self, order_number, total, **kwargs):
