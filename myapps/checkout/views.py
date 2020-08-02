@@ -4,10 +4,12 @@ from django.urls import reverse
 from oscar.apps.checkout import views
 from oscar.apps.payment import forms, models
 
+from oscar.apps.checkout.mixins import OrderPlacementMixin
+
 from paypal.payflow import facade
 
 
-class PaymentDetailsView(views.PaymentDetailsView):
+class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
     """
     An example view that shows how to integrate BOTH Paypal Express
     (see get_context_data method)and Payppal Flow (the other methods).
@@ -34,7 +36,7 @@ class PaymentDetailsView(views.PaymentDetailsView):
         # within it.  When the preview is submitted, we pick up the 'action'
         # parameters and actually place the order.
         if request.POST.get('action', '') == 'place_order':
-            return self.do_place_order(request)
+            return self.handle_place_order_submission(request)
 
         #bankcard_form = forms.BankcardForm(request.POST)
         #billing_address_form = forms.BillingAddressForm(request.POST)
@@ -53,7 +55,7 @@ class PaymentDetailsView(views.PaymentDetailsView):
                                    #bankcard_form=bankcard_form,
                                    #billing_address_form=billing_address_form)
 
-    def do_place_order(self, request):
+    def handle_place_order_submission(self, request):
         # Helper method to check that the hidden forms wasn't tinkered
         # with.
     #    bankcard_form = forms.BankcardForm(request.POST)
@@ -77,9 +79,10 @@ class PaymentDetailsView(views.PaymentDetailsView):
         # Using authorization here (two-stage model).  You could use sale to
         # perform the auth and capture in one step.  The choice is dependent
         # on your business model.
-        facade.authorize(
-            order_number, total.incl_tax,
-            kwargs['bankcard'], kwargs['billing_address'])
+        #facade.authorize(
+         #   order_number, total.incl_tax,
+          #  kwargs['bankcard'], kwargs['billing_address']
+          #  )
 
         # Record payment source and event
         source_type, is_created = models.SourceType.objects.get_or_create(
