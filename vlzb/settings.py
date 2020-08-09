@@ -87,7 +87,7 @@ INSTALLED_APPS = [
     'sorl.thumbnail',
     'django_tables2',
 
-    'paypal',
+   # 'paypal',
 ]
 
 PAYPAL_API_USERNAME = 'sb-ligll1252341_api1.business.example.com'

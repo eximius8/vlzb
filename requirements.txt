@@ -1,4 +1,4 @@
 sorl-thumbnail
-django-oscar-paypal
 django-oscar
 pycountry
+#django-oscar-paypal

@@ -6,7 +6,7 @@ from oscar.apps.payment import forms, models
 
 from oscar.apps.checkout.mixins import OrderPlacementMixin
 
-from paypal.payflow import facade
+#from paypal.payflow import facade
 
 from django.urls import reverse_lazy
 from django.shortcuts import redirect, render
@@ -32,7 +32,7 @@ class PaymentMethodView(views.PaymentMethodView):
         'check_basket_is_not_empty',
         'check_basket_is_valid',
         'check_user_email_is_captured',
-        'check_shipping_data_is_captured']
+        'check_shipping_data_is_captured',]
     template_name = 'checkout/payment_method.html'
     #skip_conditions = ['skip_unless_payment_is_required']
     success_url = reverse_lazy('checkout:payment-details')
@@ -42,7 +42,7 @@ class PaymentMethodView(views.PaymentMethodView):
         # that require a choice of payment method may want to override this
         # method to implement their specific logic.
 
-        return render(request, self.template_name, context = self.get_context_data(**kwargs) )#self.get_success_response()
+        return self.get_success_response()#render(request, self.template_name, context = self.get_context_data(**kwargs) )#
 
     def handle_choose_payment_method():
         #if bankcard_form.is_valid()
@@ -76,6 +76,10 @@ class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
     """
     template_name = 'checkout/payment_details.html'
     template_name_preview = 'checkout/preview.html'
+
+    #def get(self, request, *args, **kwargs):
+     #   return redirect(reverse_lazy('checkout:payment-method'))
+
 
     def get_context_data(self, **kwargs):
         """
@@ -144,8 +148,8 @@ class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
           #  )
 
         # Record payment source and event
-        source_type, is_created = models.SourceType.objects.get_or_create(
-            name='PayPal')
+      #  source_type, is_created = models.SourceType.objects.get_or_create(
+       #     name='PayPal')
         source = source_type.sources.model(
             source_type=source_type,
             amount_allocated=total.incl_tax, currency=total.currency)

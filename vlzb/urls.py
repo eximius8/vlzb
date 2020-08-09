@@ -28,7 +28,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),   
 
     # paypal
-    path('checkout/paypal/', include('paypal.express.urls')),
+   # path('checkout/paypal/', include('paypal.express.urls')),
     # Optional paypal
     #path(r'^dashboard/paypal/express/', application.urls),
 
