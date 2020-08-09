@@ -10,7 +10,18 @@
         </div>
         <div class="well well-success">
             <a href="{% url 'checkout:payment-details' %}" class="pull-right">{% trans "Change" %}</a>
-            <p>{% blocktrans with amount=order_total.incl_tax|currency %}<strong>{{ amount }}</strong> {{ payment_method }} will be debited from your bankcard.{% endblocktrans %}</p>            
+            <p>
+            {% if payment_method == "cod" %}
+               {% blocktrans with amount=order_total.incl_tax|currency %}<strong>{{ amount }}</strong> оплата при получении{% endblocktrans %}
+            {% elif payment_method == "yandex_kassa" %}
+            Оплата онлайн
+            {% endif %}
+            </p>
+            {% comment %} 
+            <p>
+            {% blocktrans with amount=order_total.incl_tax|currency %}
+            <strong>{{ amount }}</strong> {{ payment_method }} will be debited from your bankcard.{% endblocktrans %}</p> 
+            {% endcomment %}
         </div>
     </div>
 {% endblock %}

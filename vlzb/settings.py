@@ -100,8 +100,8 @@ PAYPAL_CURRENCY = 'RUB'
 
 
 OSCAR_PAYMENT_METHODS = (
-    ('cod', 'Cash on delivery'),    
-    ('yandex_kassa', 'Яндекс касса'),
+    ('cod', 'Оплата наличными при получении'),    
+    ('yandex_kassa', 'Оплата онлайн'),
 )
 
 
