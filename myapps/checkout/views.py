@@ -20,52 +20,60 @@ from .forms import PaymentMethodForm
 # ==============
 
 
-class PaymentMethodView(views.PaymentMethodView):
-    """
-    View for a user to choose which payment method(s) they want to use.
+# class PaymentMethodView(views.PaymentMethodView):
+#     """
+#     View for a user to choose which payment method(s) they want to use.
 
-    This would include setting allocations if payment is to be split
-    between multiple sources. It's not the place for entering sensitive details
-    like bankcard numbers though - that belongs on the payment details view.
-    """
-    pre_conditions = [
-        'check_basket_is_not_empty',
-        'check_basket_is_valid',
-        'check_user_email_is_captured',
-        'check_shipping_data_is_captured',]
-    template_name = 'checkout/payment_method.html'
-    #skip_conditions = ['skip_unless_payment_is_required']
-    success_url = reverse_lazy('checkout:payment-details')
+#     This would include setting allocations if payment is to be split
+#     between multiple sources. It's not the place for entering sensitive details
+#     like bankcard numbers though - that belongs on the payment details view.
+#     """
+#     pre_conditions = [
+#         'check_basket_is_not_empty',
+#         'check_basket_is_valid',
+#         'check_user_email_is_captured',
+#         'check_shipping_data_is_captured',]
+#     template_name = 'checkout/payment_method.html'
+#     #skip_conditions = ['skip_unless_payment_is_required']
+#     success_url = reverse_lazy('checkout:preview')
 
-    def get(self, request, *args, **kwargs):
-        # By default we redirect straight onto the payment details view. Shops
-        # that require a choice of payment method may want to override this
-        # method to implement their specific logic.
+#     def get(self, request, *args, **kwargs):
+#         # By default we redirect straight onto the payment details view. Shops
+#         # that require a choice of payment method may want to override this
+#         # method to implement their specific logic.
 
-        return self.get_success_response()#render(request, self.template_name, context = self.get_context_data(**kwargs) )#
+#         return render(request, self.template_name, context = self.get_context_data(**kwargs) )#self.get_success_response()#
 
-    def handle_choose_payment_method():
-        #if bankcard_form.is_valid()
-        pass
+#     def handle_choose_payment_method():
+#         #if bankcard_form.is_valid()
+#         pass
 
     
-    def get_context_data(self, **kwargs):
-        ctx = super(PaymentMethodView, self).get_context_data(**kwargs)
-        ctx['form'] = PaymentMethodForm
+#     def get_context_data(self, **kwargs):
+#         ctx = super(PaymentMethodView, self).get_context_data(**kwargs)
+#         ctx['form'] = PaymentMethodForm
 
-        return ctx                
+#         return ctx                
                 
 
-    def post(self, request, *args, **kwargs):
-        if request.POST.get('action', '') == 'place_order':
-            return self.handle_choose_payment_method(request)
-        return render(request, self.template_name)
+#     def post(self, request, *args, **kwargs):
+#         payment_method_form = PaymentMethodForm(request.POST)
 
-    def get_success_response(self):
-        return redirect(self.get_success_url())
+#         if not payment_method_form.is_valid():
+#             # Form validation failed, render page again with errors            
+#             ctx = self.get_context_data(form=payment_method_form)            
+#             return self.render_to_response(ctx)
 
-    def get_success_url(self):
-        return str(self.success_url)
+#         payment_method=payment_method_form.cleaned_data['payment_method']
+        
+#         return self.get_success_response()
+
+
+#     def get_success_response(self):
+#         return redirect(self.get_success_url())
+
+#     def get_success_url(self):
+#         return str(self.success_url)
 
 
 class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
@@ -74,11 +82,12 @@ class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
     (see get_context_data method)and Payppal Flow (the other methods).
     Naturally, you will only want to use one of the two.
     """
-    template_name = 'checkout/payment_details.html'
+    template_name = 'checkout/payment_method.html'#'checkout/payment_details.html'
     template_name_preview = 'checkout/preview.html'
+    payment_method = ''
 
-    #def get(self, request, *args, **kwargs):
-     #   return redirect(reverse_lazy('checkout:payment-method'))
+   # def get(self, request, *args, **kwargs):
+    #    return redirect(reverse_lazy('checkout:preview'))
 
 
     def get_context_data(self, **kwargs):
@@ -89,8 +98,11 @@ class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
         # added to the context.
         ctx = super(PaymentDetailsView, self).get_context_data(**kwargs)
         #ctx['bankcard_form'] = kwargs.get('bankcard_form', forms.BankcardForm())
-        ctx['prev']=self.preview
+        #ctx['prev']=self.preview
+        ctx['form'] = PaymentMethodForm
         #ctx['billing_address_form'] = kwargs.get('billing_address_form', forms.BillingAddressForm())
+        if self.payment_method:
+            ctx['payment_method'] = self.payment_method
         return ctx
 
     def post(self, request, *args, **kwargs):
@@ -101,9 +113,19 @@ class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
         if request.POST.get('action', '') == 'place_order':
             return self.handle_place_order_submission(request)
 
+        payment_method_form = PaymentMethodForm(request.POST)
+
+        if not payment_method_form.is_valid():
+            # Form validation failed, render page again with errors            
+            
+            pass
+
+        self.payment_method = payment_method_form.cleaned_data['payment_method']
+        
+        
         #bankcard_form = forms.BankcardForm(request.POST)
         #billing_address_form = forms.BillingAddressForm(request.POST)
-        self.preview = False
+        self.preview = True
         # if not all([bankcard_form.is_valid(),
         #             billing_address_form.is_valid()]):
         #     # Form validation failed, render page again with errors
@@ -114,9 +136,10 @@ class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
         #     return self.render_to_response(ctx)
 
         # Render preview with bankcard and billing address details hidden
-        return self.render_preview(request,)
+        return self.render_preview(request,
+                                    payment_method = self.payment_method)
                                    #bankcard_form=bankcard_form,
-                                   #billing_address_form=billing_address_form)
+                                   #billing_address_form=billing_address_form)redirect(reverse_lazy('checkout:preview')  )
 
     def handle_place_order_submission(self, request):
         # Helper method to check that the hidden forms wasn't tinkered
