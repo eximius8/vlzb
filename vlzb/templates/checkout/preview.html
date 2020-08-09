@@ -14,7 +14,7 @@
             {% if payment_method == "cod" %}
                {% blocktrans with amount=order_total.incl_tax|currency %}<strong>{{ amount }}</strong> оплата при получении{% endblocktrans %}
             {% elif payment_method == "yandex_kassa" %}
-            Оплата онлайн
+                Оплата онлайн
             {% endif %}
             </p>
             {% comment %} 
