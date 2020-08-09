@@ -8,6 +8,65 @@ from oscar.apps.checkout.mixins import OrderPlacementMixin
 
 from paypal.payflow import facade
 
+from django.urls import reverse_lazy
+from django.shortcuts import redirect, render
+
+from .forms import PaymentMethodForm
+
+
+
+# ==============
+# Payment method
+# ==============
+
+
+class PaymentMethodView(views.PaymentMethodView):
+    """
+    View for a user to choose which payment method(s) they want to use.
+
+    This would include setting allocations if payment is to be split
+    between multiple sources. It's not the place for entering sensitive details
+    like bankcard numbers though - that belongs on the payment details view.
+    """
+    pre_conditions = [
+        'check_basket_is_not_empty',
+        'check_basket_is_valid',
+        'check_user_email_is_captured',
+        'check_shipping_data_is_captured']
+    template_name = 'checkout/payment_method.html'
+    #skip_conditions = ['skip_unless_payment_is_required']
+    success_url = reverse_lazy('checkout:payment-details')
+
+    def get(self, request, *args, **kwargs):
+        # By default we redirect straight onto the payment details view. Shops
+        # that require a choice of payment method may want to override this
+        # method to implement their specific logic.
+
+        return render(request, self.template_name, context = self.get_context_data(**kwargs) )#self.get_success_response()
+
+    def handle_choose_payment_method():
+        #if bankcard_form.is_valid()
+        pass
+
+    
+    def get_context_data(self, **kwargs):
+        ctx = super(PaymentMethodView, self).get_context_data(**kwargs)
+        ctx['form'] = PaymentMethodForm
+
+        return ctx                
+                
+
+    def post(self, request, *args, **kwargs):
+        if request.POST.get('action', '') == 'place_order':
+            return self.handle_choose_payment_method(request)
+        return render(request, self.template_name)
+
+    def get_success_response(self):
+        return redirect(self.get_success_url())
+
+    def get_success_url(self):
+        return str(self.success_url)
+
 
 class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
     """
