@@ -43,7 +43,7 @@ class PaymentMethodView(views.PaymentMethodView, FormView):
         'check_basket_is_valid',
         'check_user_email_is_captured',
         'check_shipping_data_is_captured',]
-    
+
     skip_conditions = ['skip_unless_payment_is_required']
 
     def get_success_response(self):
@@ -61,32 +61,26 @@ class PaymentMethodView(views.PaymentMethodView, FormView):
     def form_valid(self, form):
         # Store payment method in the CheckoutSessionMixin.checkout_session (a CheckoutSessionData object)
         self.checkout_session.pay_by(form.cleaned_data['payment_method'])
-        return super(PaymentMethodView, self).form_valid(form)    
+        return super(PaymentMethodView, self).form_valid(form)
 
 
 class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
-    """
-    An example view that shows how to integrate BOTH Paypal Express
-    (see get_context_data method)and Payppal Flow (the other methods).
-    Naturally, you will only want to use one of the two.
-    """
+
+
     template_name = 'checkout/payment_details.html'
     template_name_preview = 'checkout/preview.html'
-    skip_conditions = ['skip_unless_payment_is_required', 'skip_for_cod_payment']
-    
 
 
 
-    def skip_for_cod_payment(self, request):
-        """
-        if payment method is cash on delivery skip the view
-        """
-        method = self.checkout_session.payment_method()
+    def handle_payment_details_submission(self, request):
+
+        return redirect(reverse_lazy('checkout:preview'))
+
+
+    def get(self, request, **kwargs):
         if not self.preview:
-            raise exceptions.PassedSkipCondition(
-                url=reverse('checkout:preview')
-            )
-
+            return redirect(reverse_lazy('checkout:preview'))
+        return self.render_preview(request, **kwargs)
 
 
 
@@ -107,13 +101,13 @@ class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
         else:
             ctx['payment_method'] = 'Оплата онлайн на яндекс - '
         return self.render_to_response(ctx)
-    
-    
 
 
 
-        
-        
+
+
+
+
 
 
     # def handle_place_order_submission(self, request):
