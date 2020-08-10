@@ -1,6 +1,11 @@
+import logging
+
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.views.generic import FormView
+
+
 from oscar.apps.checkout import views
 from oscar.apps.payment import forms, models
 
@@ -20,60 +25,42 @@ from .forms import PaymentMethodForm
 # ==============
 
 
-# class PaymentMethodView(views.PaymentMethodView):
-#     """
-#     View for a user to choose which payment method(s) they want to use.
+class PaymentMethodView(views.PaymentMethodView, FormView):
+    """
+    View for a user to choose which payment method(s) they want to use.
 
-#     This would include setting allocations if payment is to be split
-#     between multiple sources. It's not the place for entering sensitive details
-#     like bankcard numbers though - that belongs on the payment details view.
-#     """
-#     pre_conditions = [
-#         'check_basket_is_not_empty',
-#         'check_basket_is_valid',
-#         'check_user_email_is_captured',
-#         'check_shipping_data_is_captured',]
-#     template_name = 'checkout/payment_method.html'
-#     #skip_conditions = ['skip_unless_payment_is_required']
-#     success_url = reverse_lazy('checkout:preview')
-
-#     def get(self, request, *args, **kwargs):
-#         # By default we redirect straight onto the payment details view. Shops
-#         # that require a choice of payment method may want to override this
-#         # method to implement their specific logic.
-
-#         return render(request, self.template_name, context = self.get_context_data(**kwargs) )#self.get_success_response()#
-
-#     def handle_choose_payment_method():
-#         #if bankcard_form.is_valid()
-#         pass
-
+    This would include setting allocations if payment is to be split
+    between multiple sources. It's not the place for entering sensitive details
+    like bankcard numbers though - that belongs on the payment details view.
+    """
+    template_name = "checkout/payment_method.html"
+    step = 'payment-method'
+    form_class = PaymentMethodForm
+    success_url = reverse_lazy('checkout:payment-details')
+    pre_conditions = [
+        'check_basket_is_not_empty',
+        'check_basket_is_valid',
+        'check_user_email_is_captured',
+        'check_shipping_data_is_captured',]
     
-#     def get_context_data(self, **kwargs):
-#         ctx = super(PaymentMethodView, self).get_context_data(**kwargs)
-#         ctx['form'] = PaymentMethodForm
+    #skip_conditions = ['skip_unless_payment_is_required']
 
-#         return ctx                
-                
-
-#     def post(self, request, *args, **kwargs):
-#         payment_method_form = PaymentMethodForm(request.POST)
-
-#         if not payment_method_form.is_valid():
-#             # Form validation failed, render page again with errors            
-#             ctx = self.get_context_data(form=payment_method_form)            
-#             return self.render_to_response(ctx)
-
-#         payment_method=payment_method_form.cleaned_data['payment_method']
-        
-#         return self.get_success_response()
+    def get_success_response(self):
+        # No errors in get(), apply our form logic.
+        # NOTE that the checks are not make in the post() call, but this is not a problem.
+        # We can just store the payment method, and let the next view validate the other states again.
+        return FormView.get(self, self.request, self.args, self.kwargs)
 
 
-#     def get_success_response(self):
-#         return redirect(self.get_success_url())
+    def get_initial(self):
+        return {
+            'payment_method': self.checkout_session.payment_method(),
+        }
 
-#     def get_success_url(self):
-#         return str(self.success_url)
+    def form_valid(self, form):
+        # Store payment method in the CheckoutSessionMixin.checkout_session (a CheckoutSessionData object)
+        self.checkout_session.pay_by(form.cleaned_data['payment_method'])
+        return super(PaymentMethodView, self).form_valid(form)    
 
 
 class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
@@ -82,7 +69,7 @@ class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
     (see get_context_data method)and Payppal Flow (the other methods).
     Naturally, you will only want to use one of the two.
     """
-    template_name = 'checkout/payment_method.html'#'checkout/payment_details.html'
+    template_name = 'checkout/payment_details.html'
     template_name_preview = 'checkout/preview.html'
     payment_method = ''
 
