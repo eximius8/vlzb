@@ -11,11 +11,8 @@
         <div class="well well-success">
             <a href="{% url 'checkout:payment-details' %}" class="pull-right">{% trans "Change" %}</a>
             <p>
-            {% if payment_method == "cod" %}
-               {% blocktrans with amount=order_total.incl_tax|currency %}<strong>{{ amount }}</strong> оплата при получении{% endblocktrans %}
-            {% elif payment_method == "yandex_kassa" %}
-                Оплата онлайн
-            {% endif %}
+            {{ payment_method }}{% blocktrans with amount=order_total.incl_tax|currency %}<strong>{{ amount }}</strong>{% endblocktrans %}
+            
             </p>
             {% comment %} 
             <p>

@@ -1,20 +1,21 @@
 import logging
 
+from django.conf import settings
+from django.urls import reverse_lazy, reverse
+from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.http import HttpResponseRedirect
-from django.urls import reverse
 from django.views.generic import FormView
 
 
-from oscar.apps.checkout import views
+from oscar.apps.checkout import views, exceptions
+from oscar.apps.checkout.mixins import OrderPlacementMixin
 from oscar.apps.payment import forms, models
 
-from oscar.apps.checkout.mixins import OrderPlacementMixin
 
 #from paypal.payflow import facade
 
-from django.urls import reverse_lazy
-from django.shortcuts import redirect, render
+
 
 from .forms import PaymentMethodForm
 
@@ -43,7 +44,7 @@ class PaymentMethodView(views.PaymentMethodView, FormView):
         'check_user_email_is_captured',
         'check_shipping_data_is_captured',]
     
-    #skip_conditions = ['skip_unless_payment_is_required']
+    skip_conditions = ['skip_unless_payment_is_required']
 
     def get_success_response(self):
         # No errors in get(), apply our form logic.
@@ -71,97 +72,84 @@ class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
     """
     template_name = 'checkout/payment_details.html'
     template_name_preview = 'checkout/preview.html'
-    payment_method = ''
-
-   # def get(self, request, *args, **kwargs):
-    #    return redirect(reverse_lazy('checkout:preview'))
+    skip_conditions = ['skip_unless_payment_is_required', 'skip_for_cod_payment']
+    
 
 
-    def get_context_data(self, **kwargs):
+
+    def skip_for_cod_payment(self, request):
         """
-        Add data for Paypal Express flow.
+        if payment method is cash on delivery skip the view
         """
-        # Override method so the bankcard and billing address forms can be
-        # added to the context.
-        ctx = super(PaymentDetailsView, self).get_context_data(**kwargs)
-        #ctx['bankcard_form'] = kwargs.get('bankcard_form', forms.BankcardForm())
-        #ctx['prev']=self.preview
-        ctx['form'] = PaymentMethodForm
-        #ctx['billing_address_form'] = kwargs.get('billing_address_form', forms.BillingAddressForm())
-        if self.payment_method:
-            ctx['payment_method'] = self.payment_method
-        return ctx
+        method = self.checkout_session.payment_method()
+        if not self.preview:
+            raise exceptions.PassedSkipCondition(
+                url=reverse('checkout:preview')
+            )
 
-    def post(self, request, *args, **kwargs):
-        # Override so we can validate the bankcard/billingaddress submission.
-        # If it is valid, we render the preview screen with the forms hidden
-        # within it.  When the preview is submitted, we pick up the 'action'
-        # parameters and actually place the order.
-        if request.POST.get('action', '') == 'place_order':
-            return self.handle_place_order_submission(request)
 
-        payment_method_form = PaymentMethodForm(request.POST)
 
-        if not payment_method_form.is_valid():
-            # Form validation failed, render page again with errors            
-            
-            pass
 
-        self.payment_method = payment_method_form.cleaned_data['payment_method']
-        
-        
-        #bankcard_form = forms.BankcardForm(request.POST)
-        #billing_address_form = forms.BillingAddressForm(request.POST)
+
+    def render_preview(self, request, **kwargs):
+        """
+        Show a preview of the order.
+
+        If sensitive data was submitted on the payment details page, you will
+        need to pass it back to the view here so it can be stored in hidden
+        form inputs.  This avoids ever writing the sensitive data to disk.
+        """
         self.preview = True
-        # if not all([bankcard_form.is_valid(),
-        #             billing_address_form.is_valid()]):
-        #     # Form validation failed, render page again with errors
-        #     self.preview = False
-        #     ctx = self.get_context_data(
-        #         bankcard_form=bankcard_form,
-        #         billing_address_form=billing_address_form)
-        #     return self.render_to_response(ctx)
+        ctx = self.get_context_data(**kwargs)
+        method = self.checkout_session.payment_method()
+        if method == 'cod':
+            ctx['payment_method'] = 'Оплата наличными при получении - '
+        else:
+            ctx['payment_method'] = 'Оплата онлайн на яндекс - '
+        return self.render_to_response(ctx)
+    
+    
 
-        # Render preview with bankcard and billing address details hidden
-        return self.render_preview(request,
-                                    payment_method = self.payment_method)
-                                   #bankcard_form=bankcard_form,
-                                   #billing_address_form=billing_address_form)redirect(reverse_lazy('checkout:preview')  )
 
-    def handle_place_order_submission(self, request):
-        # Helper method to check that the hidden forms wasn't tinkered
-        # with.
-    #    bankcard_form = forms.BankcardForm(request.POST)
-    #    billing_address_form = forms.BillingAddressForm(request.POST)
-        if False:#not all([bankcard_form.is_valid(),
-                #    billing_address_form.is_valid()]):
-            messages.error(request, "Invalid submission")
-            return HttpResponseRedirect(reverse('checkout:payment-details'))
 
-        # Attempt to submit the order, passing the bankcard object so that it
-        # gets passed back to the 'handle_payment' method below.
-        submission = self.build_submission()
-        #submission['payment_kwargs']['bankcard'] = bankcard_form.bankcard
-        #submission['payment_kwargs']['billing_address'] = billing_address_form.cleaned_data
-        return self.submit(**submission)
+        
+        
 
-    def handle_payment(self, order_number, total, **kwargs):
-        """
-        Make submission to PayPal
-        """
-        # Using authorization here (two-stage model).  You could use sale to
-        # perform the auth and capture in one step.  The choice is dependent
-        # on your business model.
-        #facade.authorize(
-         #   order_number, total.incl_tax,
-          #  kwargs['bankcard'], kwargs['billing_address']
-          #  )
 
-        # Record payment source and event
-      #  source_type, is_created = models.SourceType.objects.get_or_create(
-       #     name='PayPal')
-        source = source_type.sources.model(
-            source_type=source_type,
-            amount_allocated=total.incl_tax, currency=total.currency)
-        self.add_payment_source(source)
-        self.add_payment_event('Authorised', total.incl_tax)
+    # def handle_place_order_submission(self, request):
+    #     # Helper method to check that the hidden forms wasn't tinkered
+    #     # with.
+    # #    bankcard_form = forms.BankcardForm(request.POST)
+    # #    billing_address_form = forms.BillingAddressForm(request.POST)
+    #     if False:#not all([bankcard_form.is_valid(),
+    #             #    billing_address_form.is_valid()]):
+    #         messages.error(request, "Invalid submission")
+    #         return HttpResponseRedirect(reverse('checkout:payment-details'))
+
+    #     # Attempt to submit the order, passing the bankcard object so that it
+    #     # gets passed back to the 'handle_payment' method below.
+    #     submission = self.build_submission()
+    #     #submission['payment_kwargs']['bankcard'] = bankcard_form.bankcard
+    #     #submission['payment_kwargs']['billing_address'] = billing_address_form.cleaned_data
+    #     return self.submit(**submission)
+
+    # def handle_payment(self, order_number, total, **kwargs):
+    #     """
+    #     Make submission to PayPal
+    #     """
+    #     # Using authorization here (two-stage model).  You could use sale to
+    #     # perform the auth and capture in one step.  The choice is dependent
+    #     # on your business model.
+    #     #facade.authorize(
+    #      #   order_number, total.incl_tax,
+    #       #  kwargs['bankcard'], kwargs['billing_address']
+    #       #  )
+
+    #     # Record payment source and event
+    #   #  source_type, is_created = models.SourceType.objects.get_or_create(
+    #    #     name='PayPal')
+    #     source = source_type.sources.model(
+    #         source_type=source_type,
+    #         amount_allocated=total.incl_tax, currency=total.currency)
+    #     self.add_payment_source(source)
+    #     self.add_payment_event('Authorised', total.incl_tax)
