@@ -1,4 +1,5 @@
 sorl-thumbnail
 django-oscar
 pycountry
+yandex_checkout
 #django-oscar-paypal

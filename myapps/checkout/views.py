@@ -1,23 +1,38 @@
 import logging
+import uuid
 
 from django.conf import settings
 from django.urls import reverse_lazy, reverse
 from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.http import HttpResponseRedirect
-from django.views.generic import FormView
+from django.views.generic import DetailView, FormView
 
 
 from oscar.apps.checkout import views, exceptions
 from oscar.apps.checkout.mixins import OrderPlacementMixin
 from oscar.apps.payment import forms, models
 
-
-#from paypal.payflow import facade
-
-
-
 from .forms import PaymentMethodForm
+
+
+from yandex_checkout import Configuration, Payment
+
+Configuration.account_id = 'dsadsadasdsa'
+Configuration.secret_key = 'dsadasdsa'
+
+# payment = Payment.create({
+#     "amount": {
+#         "value": "100.00",
+#         "currency": "RUB"
+#     },
+#     "confirmation": {
+#         "type": "redirect",
+#         "return_url": "https://www.merchant-website.com/return_url"
+#     },
+#     "capture": True,
+#     "description": "Заказ №1"
+# }, uuid.uuid4())
 
 
 
@@ -70,6 +85,35 @@ class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
     template_name = 'checkout/payment_details.html'
     template_name_preview = 'checkout/preview.html'
 
+    pre_conditions = [
+        'check_basket_is_not_empty',
+        'check_basket_is_valid',
+        'check_user_email_is_captured',
+        'check_shipping_data_is_captured',
+        'check_payment_method_is_captured',]
+
+    def check_payment_method_is_captured(self, request):
+        if not self.checkout_session.payment_method():
+            raise exceptions.FailedPreCondition(
+                url=reverse('checkout:payment-method'),
+                message="Пожалуйста выберите метод оплаты"
+            )
+
+
+    def handle_payment(self, order_number, total, **kwargs):
+        """
+        Handle any payment processing and record payment sources and events.
+
+        This method is designed to be overridden within your project.  The
+        default is to do nothing as payment is domain-specific.
+
+        This method is responsible for handling payment and recording the
+        payment sources (using the add_payment_source method) and payment
+        events (using add_payment_event) so they can be
+        linked to the order when it is saved later on.
+        """
+        pass
+
 
     def handle_payment_details_submission(self, request):
 
@@ -101,46 +145,21 @@ class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
 
 
 
+    def handle_place_order_submission(self, request):
+      
+        if False:#not all([bankcard_form.is_valid(),
+                #    billing_address_form.is_valid()]):
+            messages.error(request, "Invalid submission")
+            return HttpResponseRedirect(reverse('checkout:payment-details'))
+
+        # Attempt to submit the order, passing the bankcard object so that it
+        # gets passed back to the 'handle_payment' method below.
+        submission = self.build_submission()
+        #submission['payment_kwargs']['bankcard'] = bankcard_form.bankcard
+        #submission['payment_kwargs']['billing_address'] = billing_address_form.cleaned_data
+        return self.submit(**submission)
 
 
+class ThankYouView(views.ThankYouView, DetailView):
 
-
-
-
-    # def handle_place_order_submission(self, request):
-    #     # Helper method to check that the hidden forms wasn't tinkered
-    #     # with.
-    # #    bankcard_form = forms.BankcardForm(request.POST)
-    # #    billing_address_form = forms.BillingAddressForm(request.POST)
-    #     if False:#not all([bankcard_form.is_valid(),
-    #             #    billing_address_form.is_valid()]):
-    #         messages.error(request, "Invalid submission")
-    #         return HttpResponseRedirect(reverse('checkout:payment-details'))
-
-    #     # Attempt to submit the order, passing the bankcard object so that it
-    #     # gets passed back to the 'handle_payment' method below.
-    #     submission = self.build_submission()
-    #     #submission['payment_kwargs']['bankcard'] = bankcard_form.bankcard
-    #     #submission['payment_kwargs']['billing_address'] = billing_address_form.cleaned_data
-    #     return self.submit(**submission)
-
-    # def handle_payment(self, order_number, total, **kwargs):
-    #     """
-    #     Make submission to PayPal
-    #     """
-    #     # Using authorization here (two-stage model).  You could use sale to
-    #     # perform the auth and capture in one step.  The choice is dependent
-    #     # on your business model.
-    #     #facade.authorize(
-    #      #   order_number, total.incl_tax,
-    #       #  kwargs['bankcard'], kwargs['billing_address']
-    #       #  )
-
-    #     # Record payment source and event
-    #   #  source_type, is_created = models.SourceType.objects.get_or_create(
-    #    #     name='PayPal')
-    #     source = source_type.sources.model(
-    #         source_type=source_type,
-    #         amount_allocated=total.incl_tax, currency=total.currency)
-    #     self.add_payment_source(source)
-    #     self.add_payment_event('Authorised', total.incl_tax)
+    template_name = 'checkout/thank_you.html'
