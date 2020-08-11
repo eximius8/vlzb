@@ -71,7 +71,6 @@ class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
     template_name_preview = 'checkout/preview.html'
 
 
-
     def handle_payment_details_submission(self, request):
 
         return redirect(reverse_lazy('checkout:preview'))
@@ -81,8 +80,6 @@ class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
         if not self.preview:
             return redirect(reverse_lazy('checkout:preview'))
         return self.render_preview(request, **kwargs)
-
-
 
 
     def render_preview(self, request, **kwargs):
