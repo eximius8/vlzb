@@ -12,27 +12,14 @@ from django.views.generic import DetailView, FormView
 from oscar.apps.checkout import views, exceptions
 from oscar.apps.checkout.mixins import OrderPlacementMixin
 from oscar.apps.payment import forms, models
+from oscar.apps.payment.exceptions import RedirectRequired
 
 from .forms import PaymentMethodForm
 
 
 from yandex_checkout import Configuration, Payment
 
-Configuration.account_id = 'dsadsadasdsa'
-Configuration.secret_key = 'dsadasdsa'
 
-# payment = Payment.create({
-#     "amount": {
-#         "value": "100.00",
-#         "currency": "RUB"
-#     },
-#     "confirmation": {
-#         "type": "redirect",
-#         "return_url": "https://www.merchant-website.com/return_url"
-#     },
-#     "capture": True,
-#     "description": "Заказ №1"
-# }, uuid.uuid4())
 
 
 
@@ -93,34 +80,29 @@ class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
         'check_payment_method_is_captured',]
 
     def check_payment_method_is_captured(self, request):
+        """
+        Precheck for user has chosen payment method
+        if not chosen send to checkout:payment-method page
+        """
         if not self.checkout_session.payment_method():
             raise exceptions.FailedPreCondition(
                 url=reverse('checkout:payment-method'),
                 message="Пожалуйста выберите метод оплаты"
             )
 
-
-    def handle_payment(self, order_number, total, **kwargs):
-        """
-        Handle any payment processing and record payment sources and events.
-
-        This method is designed to be overridden within your project.  The
-        default is to do nothing as payment is domain-specific.
-
-        This method is responsible for handling payment and recording the
-        payment sources (using the add_payment_source method) and payment
-        events (using add_payment_event) so they can be
-        linked to the order when it is saved later on.
-        """
-        pass
-
-
     def handle_payment_details_submission(self, request):
-
+        """
+        Dont show payment-details page
+        if POST to payment-details - redirect to preview
+        """
         return redirect(reverse_lazy('checkout:preview'))
-
-
+    
+    
     def get(self, request, **kwargs):
+        """
+        if GET to payment details
+        redirect to preview
+        """ 
         if not self.preview:
             return redirect(reverse_lazy('checkout:preview'))
         return self.render_preview(request, **kwargs)
@@ -144,20 +126,69 @@ class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
         return self.render_to_response(ctx)
 
 
-
     def handle_place_order_submission(self, request):
-      
-        if False:#not all([bankcard_form.is_valid(),
-                #    billing_address_form.is_valid()]):
-            messages.error(request, "Invalid submission")
-            return HttpResponseRedirect(reverse('checkout:payment-details'))
+        """
+        Method is called after 'Place order' button is pressed
+        """
 
-        # Attempt to submit the order, passing the bankcard object so that it
-        # gets passed back to the 'handle_payment' method below.
-        submission = self.build_submission()
-        #submission['payment_kwargs']['bankcard'] = bankcard_form.bankcard
-        #submission['payment_kwargs']['billing_address'] = billing_address_form.cleaned_data
+        submission = self.build_submission()      
         return self.submit(**submission)
+
+
+    def handle_payment(self, order_number, total, **kwargs):
+        """
+        Called from submit method
+        Handle any payment processing and record payment sources and events.
+
+        This method is designed to be overridden within your project.
+
+        This method is responsible for handling payment and recording the
+        payment sources (using the add_payment_source method) and payment
+        events (using add_payment_event) so they can be
+        linked to the order when it is saved later on.
+        """
+        method = self.checkout_session.payment_method()
+        if method == 'cod':            
+            source_type, is_created = models.SourceType.objects.get_or_create(name='cash')
+        elif method == 'yandex_kassa':
+            Configuration.account_id = 'dsadsadasdsa'
+            Configuration.secret_key = 'dsadasdsa'
+            source_type, is_created = models.SourceType.objects.get_or_create(name='online')
+            # payment = Payment.create({
+            #     "amount": {
+            #         "value": "100.00",
+            #         "currency": "RUB"
+            #     },
+            #     "confirmation": {
+            #         "type": "redirect",
+            #         "return_url": "https://www.merchant-website.com/return_url"
+            #     },
+            #     "capture": True,
+            #     "description": "Заказ №1"
+            # }, uuid.uuid4())
+
+
+        source = source_type.sources.model(
+            source_type=source_type, 
+            amount_allocated=total.incl_tax, 
+            currency=total.currency)
+        self.add_payment_source(source)
+        self.add_payment_event('Authorised', total.incl_tax)
+
+        
+        #raise RedirectRequired(url='/')
+        
+ 
+
+
+
+
+
+    
+
+
+
+    
 
 
 class ThankYouView(views.ThankYouView, DetailView):
