@@ -85,23 +85,16 @@ INSTALLED_APPS = [
     'haystack',
     'treebeard',
     'sorl.thumbnail',
-    'django_tables2',
-
-   # 'paypal',
+    'django_tables2',  
 ]
 
-PAYPAL_API_USERNAME = 'sb-ligll1252341_api1.business.example.com'
-PAYPAL_API_PASSWORD = '9SLFHQYJCJ484KTJ'
-PAYPAL_API_SIGNATURE = 'AErUJZx.Btq3.dnDQaYLyX-ypnZAA57tWRImRvTXn1KdF56UCo7aBOtk'
-
-PAYPAL_SANDBOX_MODE = True
 
 PAYPAL_CURRENCY = 'RUB'
 
 
 OSCAR_PAYMENT_METHODS = (
     ('cod', 'Оплата наличными при получении'),    
-    ('yandex_kassa', 'Оплата онлайн'),
+   # ('yandex_kassa', 'Оплата онлайн'),
 )
 
 
@@ -132,12 +125,12 @@ from django.utils.translation import ugettext_lazy as _
 #         ]
 #     })
 
-OSCAR_INITIAL_ORDER_STATUS = 'Pending'
-OSCAR_INITIAL_LINE_STATUS = 'Pending'
+OSCAR_INITIAL_ORDER_STATUS = 'Заказ создан'
+OSCAR_INITIAL_LINE_STATUS = 'Заказ создан'
 OSCAR_ORDER_STATUS_PIPELINE = {
-                                'Pending': ('Being processed', 'Cancelled',),
-                                'Being processed': ('Processed', 'Cancelled',),
-                                'Cancelled': (),
+                                'Заказ создан': ('Обработка', 'Отменен',),
+                                'Обработка': ('Завершен', 'Отменен',),
+                                'Отменен': (),
                                 }
 
 MIDDLEWARE = [
