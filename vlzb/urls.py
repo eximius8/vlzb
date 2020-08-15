@@ -16,6 +16,9 @@ Including another URLconf
 from django.apps import apps
 from django.urls import include, path
 from django.contrib import admin
+
+from django.conf import settings
+from django.conf.urls.static import static
 #from oscar.apps import shop
 #from paypal.express.dashboard.app import application
 
@@ -35,6 +38,6 @@ urlpatterns = [
 
 
     path('', include(apps.get_app_config('oscar').urls[0])),   
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 
