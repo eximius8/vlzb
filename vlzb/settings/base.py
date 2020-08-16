@@ -147,6 +147,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Oscar variables
+OSCAR_SHOP_NAME = 'ИП Бушнев'
+OSCAR_SHOP_TAGLINE = "Товары для праздника"
 OSCAR_DEFAULT_CURRENCY = 'RUB'
 OSCAR_REQUIRED_ADDRESS_FIELDS = ('first_name', 'last_name', 'postcode', 'state')
 OSCAR_INITIAL_ORDER_STATUS = 'Заказ создан'
