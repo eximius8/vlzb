@@ -162,9 +162,9 @@ class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
                 },
                 "confirmation": {
                     "type": "redirect",
-                    "return_url": "https://ru.bezoder.com/"
+                    "return_url": "http://127.0.0.1:8000/checkout/thank-you/"
                 },
-                "capture": True,
+                "capture": True, # холдирование - False
                 "description": order_number
             }, uuid.uuid4())
             redirect_url = payment.confirmation.confirmation_url
