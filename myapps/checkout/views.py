@@ -150,9 +150,10 @@ class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
         method = self.checkout_session.payment_method()
         if method == 'cod':            
             source_type, is_created = models.SourceType.objects.get_or_create(name='cash')
+            redirect_url = ''
         elif method == 'yandex_kassa':
-            Configuration.account_id = settings.kassa_id
-            Configuration.secret_key = settings.kassa_token
+            Configuration.account_id = settings.KASSA_ID
+            Configuration.secret_key = settings.KASSA_TOKEN
             source_type, is_created = models.SourceType.objects.get_or_create(name='online')
             payment = Payment.create({
                 "amount": {

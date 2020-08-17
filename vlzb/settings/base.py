@@ -12,6 +12,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 # ================   Django variables   ====================
 # ==========================================================
 SECRET_KEY = os.environ.get('SECRET_KEY')
+KASSA_ID = os.environ.get('YANDEX_KASSA_ACC_ID')
+KASSA_TOKEN = os.environ.get('YANDEX_KASSA_SECRET_KEY')
+
 ROOT_URLCONF = 'vlzb.urls'
 SITE_ID = 1
 # Internationalization
@@ -164,8 +167,7 @@ OSCAR_PAYMENT_METHODS = (
     ('yandex_kassa', 'Оплата онлайн'),
 )
 
-kassa_id = os.environ.get('YANDEX_KASSA_ACC_ID')
-kassa_token = os.environ.get('YANDEX_KASSA_SECRET_KEY')
+
 
 OSCAR_DASHBOARD_NAVIGATION += [
     {
