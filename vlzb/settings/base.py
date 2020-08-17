@@ -161,8 +161,11 @@ OSCAR_ORDER_STATUS_PIPELINE = {
 
 OSCAR_PAYMENT_METHODS = (
     ('cod', 'Оплата наличными при получении'),    
-   # ('yandex_kassa', 'Оплата онлайн'),
+    ('yandex_kassa', 'Оплата онлайн'),
 )
+
+kassa_id = os.environ.get('YANDEX_KASSA_ACC_ID')
+kassa_token = os.environ.get('YANDEX_KASSA_SECRET_KEY')
 
 OSCAR_DASHBOARD_NAVIGATION += [
     {

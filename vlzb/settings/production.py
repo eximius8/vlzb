@@ -6,6 +6,8 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 CONN_MAX_AGE = 3600
 
+ALLOWED_HOSTS = ['*']
+
 
 
 # Static files (CSS, JavaScript, Images)

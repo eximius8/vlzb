@@ -151,21 +151,22 @@ class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
         if method == 'cod':            
             source_type, is_created = models.SourceType.objects.get_or_create(name='cash')
         elif method == 'yandex_kassa':
-            Configuration.account_id = 'dsadsadasdsa'
-            Configuration.secret_key = 'dsadasdsa'
+            Configuration.account_id = settings.kassa_id
+            Configuration.secret_key = settings.kassa_token
             source_type, is_created = models.SourceType.objects.get_or_create(name='online')
-            # payment = Payment.create({
-            #     "amount": {
-            #         "value": "100.00",
-            #         "currency": "RUB"
-            #     },
-            #     "confirmation": {
-            #         "type": "redirect",
-            #         "return_url": "https://www.merchant-website.com/return_url"
-            #     },
-            #     "capture": True,
-            #     "description": "Заказ №1"
-            # }, uuid.uuid4())
+            payment = Payment.create({
+                "amount": {
+                    "value": str(total.incl_tax),
+                    "currency": "RUB"
+                },
+                "confirmation": {
+                    "type": "redirect",
+                    "return_url": "https://ru.bezoder.com/"
+                },
+                "capture": True,
+                "description": order_number
+            }, uuid.uuid4())
+            redirect_url = payment.confirmation.confirmation_url
 
 
         source = source_type.sources.model(
@@ -174,6 +175,8 @@ class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
             currency=total.currency)
         self.add_payment_source(source)
         self.add_payment_event('Authorised', total.incl_tax)
+        if redirect_url:
+            raise RedirectRequired(redirect_url)
 
         
         #raise RedirectRequired(url='/')
