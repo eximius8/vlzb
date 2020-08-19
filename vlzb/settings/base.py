@@ -14,6 +14,17 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 SECRET_KEY = os.environ.get('SECRET_KEY')
 KASSA_ID = os.environ.get('YANDEX_KASSA_ACC_ID')
 KASSA_TOKEN = os.environ.get('YANDEX_KASSA_SECRET_KEY')
+# http://michael-borisov.com/2014/10/09/yandex-smtp-and-django/
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = os.environ.get('EMAIL_SMTP')
+EMAIL_HOST_USER = os.environ.get('SHOP_EMAIL')
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+OSCAR_FROM_EMAIL = os.environ.get('SHOP_EMAIL')
+EMAIL_HOST_PASSWORD = os.environ.get('SHOP_EMAIL_PASSWORD')
+
 
 ROOT_URLCONF = 'vlzb.urls'
 SITE_ID = 1

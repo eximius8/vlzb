@@ -177,6 +177,7 @@ class PaymentDetailsView(views.PaymentDetailsView, OrderPlacementMixin):
         self.add_payment_source(source)
         self.add_payment_event('Authorised', total.incl_tax)
         if redirect_url:
+           # return redirect(redirect_url)
             raise RedirectRequired(redirect_url)
 
         
