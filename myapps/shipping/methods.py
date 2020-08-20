@@ -2,35 +2,40 @@ from oscar.apps.shipping import methods
 from oscar.core import prices
 from decimal import Decimal as D
 
-class Standard(methods.Base):
+class Reserve(methods.Base):
     code = 'standard'
-    name = 'Standard shipping (free)'
+    name = 'Самовывоз из магазина в Волжском по адресу: 404130 Коммунистическая 36 (товар будет зарезервирован на 5 дней)'
 
     def calculate(self, basket):
         return prices.Price(
             currency=basket.currency,
             excl_tax=D('0.00'), incl_tax=D('0.00'))
 
-class Ultrafast(methods.FixedPrice):
-    code = 'ufast'
-    name = 'Ultrafast shipping'
+class Vlzship(methods.FixedPrice):
+    code = 'ufast-vlz'
+    name = 'Доставка курьером по Волжскому'
 
     def calculate(self, basket):
         return prices.Price(
             currency=basket.currency,
-            excl_tax=D('1430.00'), incl_tax=D('4321.00'))
+            excl_tax=D('50.00'), incl_tax=D('50.00'))
 
-class Reserve(methods.NoShippingRequired):
-    code = 'RESERVE'
-    name = 'Reserve'
-    description = 'Items will be reserved at the warehouse for 7 days'
-
-
-class Express(methods.FixedPrice):
-    code = 'express'
-    name = 'Express shipping'
+class VlgKraship(methods.FixedPrice):
+    code = 'ufast-vlg'
+    name = 'Доставка курьером по Волгограду и Краснослободску'
 
     def calculate(self, basket):
         return prices.Price(
             currency=basket.currency,
-            excl_tax=D('10.00'), incl_tax=D('1.00'))
+            excl_tax=D('250.00'), incl_tax=D('250.00'))
+
+class Sraship(methods.FixedPrice):
+    code = 'ufast-sra'
+    name = 'Доставка курьером в Среднюю Ахтубу'
+
+    def calculate(self, basket):
+        return prices.Price(
+            currency=basket.currency,
+            excl_tax=D('150.00'), incl_tax=D('150.00'))
+
+

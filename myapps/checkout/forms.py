@@ -4,21 +4,33 @@ from django.utils.translation import ugettext_lazy as _
 from oscar.apps.checkout.forms import ShippingAddressForm as OldShippingAddressForm
 from oscar.core.loading import get_model
 
+VOLGA_CITIES = [
+    ('VLZ', 'Волжский'),
+    ('VLG', 'Волгоград'),
+    ('SRA', 'Средняя Ахтуба'),
+    ('LEN', 'Ленинск'),
+    ('KRA', 'Краснослободск'),
+]
+
 class  ShippingAddressForm(OldShippingAddressForm):
 
-    class Meta:
+    class Meta:        
         model = get_model('order', 'shippingaddress')
         fields = [
             'first_name', 'last_name',
-            'line1', 'line2', #'line3', #'line4',
+            'line2', 'line1', 'line3', #'line4',
             'state', 
             'postcode', 'country',
             'phone_number', 'notes',
         ]
         labels = {
             'state': 'Город',
-            #'line1': 'Отчество (при наличии)',
-            #'line2': 'Адрес',            
+            'line2': 'Отчество (при наличии)',
+            'line1': 'Первая строка адреса', 
+            'line3': 'Вторая строка адреса',            
+        }
+        widgets = {
+            'state': forms.Select(choices=VOLGA_CITIES),
         }
 
 
