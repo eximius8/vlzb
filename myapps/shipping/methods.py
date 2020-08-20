@@ -2,7 +2,7 @@ from oscar.apps.shipping import methods
 from oscar.core import prices
 from decimal import Decimal as D
 
-class Reserve(methods.Base):
+class Reserve(methods.Free):
     code = 'standard'
     name = 'Самовывоз из магазина в Волжском по адресу: 404130 Коммунистическая 36 (товар будет зарезервирован на 5 дней)'
 
@@ -10,6 +10,19 @@ class Reserve(methods.Base):
         return prices.Price(
             currency=basket.currency,
             excl_tax=D('0.00'), incl_tax=D('0.00'))
+
+class PochtaRu(methods.Base):
+    code = 'pochta-ru'
+    name = 'Доставка почтой России'
+
+
+    def calculate(self, basket):
+
+        return prices.Price(
+            currency=basket.currency,
+            excl_tax=D('250.00'), incl_tax=D('250.00'))
+
+
 
 class Vlzship(methods.FixedPrice):
     code = 'ufast-vlz'
