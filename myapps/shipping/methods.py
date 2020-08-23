@@ -23,12 +23,15 @@ class PochtaRu(methods.Base):
             excl_tax=D('250.00'), incl_tax=D('250.00'))
 
 
-
 class Vlzship(methods.FixedPrice):
     code = 'ufast-vlz'
     name = 'Доставка курьером по Волжскому'
 
     def calculate(self, basket):
+        if float(basket.total_incl_tax) > 999.:
+            return prices.Price(
+                currency=basket.currency,
+                excl_tax=D('0.00'), incl_tax=D('0.00'))
         return prices.Price(
             currency=basket.currency,
             excl_tax=D('50.00'), incl_tax=D('50.00'))

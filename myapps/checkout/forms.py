@@ -5,11 +5,10 @@ from oscar.apps.checkout.forms import ShippingAddressForm as OldShippingAddressF
 from oscar.core.loading import get_model
 
 VOLGA_CITIES = [
-    ('VLZ', 'Волжский'),
-    ('VLG', 'Волгоград'),
-    ('SRA', 'Средняя Ахтуба'),
-    ('LEN', 'Ленинск'),
-    ('KRA', 'Краснослободск'),
+    ('Волжский', 'Волжский'),
+    ('Волгоград', 'Волгоград'),
+    ('Средняя Ахтуба', 'Средняя Ахтуба'),    
+    ('Краснослободск', 'Краснослободск'),
 ]
 
 class  ShippingAddressForm(OldShippingAddressForm):
@@ -17,20 +16,23 @@ class  ShippingAddressForm(OldShippingAddressForm):
     class Meta:        
         model = get_model('order', 'shippingaddress')
         fields = [
-            'first_name', 'last_name',
-            'line2', 'line1', 'line3', #'line4',
+            'first_name', 'last_name', #'title',
+            'line1', 'line2', #'line3', #'line4',
             'state', 
             'postcode', 'country',
             'phone_number', 'notes',
         ]
         labels = {
+            'first_name': 'Имя и Отчество (при наличии)',
             'state': 'Город',
-            'line2': 'Отчество (при наличии)',
-            'line1': 'Первая строка адреса', 
-            'line3': 'Вторая строка адреса',            
+           # 'title': 'Отчество (при наличии)',
+           # 'line1': 'Отчество (при наличии)',
+         #   'line2': 'Первая строка адреса', 
+          #  'line3': 'Вторая строка адреса',            
         }
         widgets = {
             'state': forms.Select(choices=VOLGA_CITIES),
+            'title': forms.TextInput(attrs={'maxlength':50}),
         }
 
 
@@ -39,7 +41,7 @@ class PaymentMethodForm(forms.Form):
     Extra form for the custom payment method.
     """
     payment_method = forms.ChoiceField(
-        label=_("Select a payment method"),
+        label=_("Выберите способ оплаты"),
         choices=settings.OSCAR_PAYMENT_METHODS,
         widget=forms.RadioSelect()
     )
