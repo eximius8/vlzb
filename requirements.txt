@@ -2,4 +2,6 @@ sorl-thumbnail
 django-oscar
 pycountry
 yandex_checkout
+django-storages
+google-cloud-storage
 #django-oscar-paypal

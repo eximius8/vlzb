@@ -22,8 +22,13 @@ EMAIL_HOST = os.environ.get('EMAIL_SMTP')
 EMAIL_HOST_USER = os.environ.get('SHOP_EMAIL')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-OSCAR_FROM_EMAIL = os.environ.get('SHOP_EMAIL')
+OSCAR_FROM_EMAIL = "Магазин 34 <" + os.environ.get('SHOP_EMAIL') + ">"
 EMAIL_HOST_PASSWORD = os.environ.get('SHOP_EMAIL_PASSWORD')
+
+SESSION_ENGINE =  'django.contrib.sessions.backends.signed_cookies' # "django.contrib.sessions.backends.file"
+
+SESSION_COOKIE_AGE = 600000
+
 
 
 ROOT_URLCONF = 'vlzb.urls'
@@ -37,8 +42,9 @@ USE_L10N = True
 USE_TZ = True
 WSGI_APPLICATION = 'vlzb.wsgi.application'
 STATIC_URL = '/static/'
+
 STATICFILES_DIRS = [    
-    'static/',
+    os.path.join(BASE_DIR, 'sstatic'),
 ]
 
 INSTALLED_APPS = [
@@ -92,6 +98,9 @@ INSTALLED_APPS = [
     'treebeard',
     'sorl.thumbnail',
     'django_tables2',  
+
+    # Additional apps
+    'storages', # pip install django-storages
 ]
 
 MIDDLEWARE = [
@@ -191,3 +200,45 @@ OSCAR_DASHBOARD_NAVIGATION += [
          ]
     },
 ]
+
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
+
+
+
+if not os.getenv('GAE_APPLICATION', None):
+    UPLOAD_ROOT = os.path.join(BASE_DIR, 'media/')    
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+    STATIC_URL = '/static/'
+
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+    MEDIA_URL = '/media/'  
+
+    
+    DOWNLOAD_ROOT = os.path.join(BASE_DIR, "media/")
+    DOWNLOAD_URL = "media/"
+    
+else: 
+    # for prod environment
+    DEFAULT_FILE_STORAGE = 'gcloud.GoogleCloudMediaFileStorage'
+    STATICFILES_STORAGE = 'gcloud.GoogleCloudStaticFileStorage'
+
+    GS_PROJECT_ID = 'bezoder'
+    GS_STATIC_BUCKET_NAME = 'mag34'
+    GS_MEDIA_BUCKET_NAME = 'mag34'
+
+    STATIC_URL = 'https://storage.googleapis.com/{}/'.format(GS_STATIC_BUCKET_NAME)
+    STATIC_ROOT = "static/"
+
+    MEDIA_URL = 'https://storage.googleapis.com/{}/'.format(GS_MEDIA_BUCKET_NAME)
+    MEDIA_ROOT = "media/"
+
+    UPLOAD_ROOT = 'media/uploads/'
+
+    PROJECT_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)
+    DOWNLOAD_ROOT = os.path.join(PROJECT_ROOT, "static/media/downloads")
+    DOWNLOAD_URL = STATIC_URL + "media/downloads"
