@@ -41,11 +41,8 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 WSGI_APPLICATION = 'vlzb.wsgi.application'
-STATIC_URL = '/static/'
 
-STATICFILES_DIRS = [    
-    os.path.join(BASE_DIR, 'sstatic'),
-]
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -206,6 +203,10 @@ STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
 
+
+# STATICFILES_DIRS = [    
+#     os.path.join(BASE_DIR, 'static'),
+# ]
 
 
 if not os.getenv('GAE_APPLICATION', None):
