@@ -218,10 +218,10 @@ if not os.getenv('GAE_APPLICATION', None):
 
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
     MEDIA_URL = '/media/'  
-
     
-    DOWNLOAD_ROOT = os.path.join(BASE_DIR, "media/")
-    DOWNLOAD_URL = "media/"
+    
+    DOWNLOAD_ROOT = os.path.join(BASE_DIR, "media")
+    DOWNLOAD_URL = "/media/"
     
 else: 
     # for prod environment
@@ -243,3 +243,18 @@ else:
     PROJECT_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)
     DOWNLOAD_ROOT = os.path.join(PROJECT_ROOT, "static/media/downloads")
     DOWNLOAD_URL = STATIC_URL + "media/downloads"
+
+
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+#     }
+# }
+
+
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
+#         'LOCATION': '/tmp/memcached.sock',
+#     }
+# }

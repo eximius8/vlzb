@@ -4,4 +4,5 @@ pycountry
 yandex_checkout
 django-storages
 google-cloud-storage
+#pylibmc
 #django-oscar-paypal
