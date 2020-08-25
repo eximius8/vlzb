@@ -12,6 +12,8 @@ app.yaml
 # static files folder
 static/
 
+cloud_sql_proxy
+
 # Distribution / packaging
 .Python
 env/

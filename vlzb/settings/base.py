@@ -1,47 +1,18 @@
 import os
 
 from oscar.defaults import *
+from .variables import *
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
-# ==========================================================
-# ================   Django variables   ====================
-# ==========================================================
-SECRET_KEY = os.environ.get('SECRET_KEY')
-KASSA_ID = os.environ.get('YANDEX_KASSA_ACC_ID')
-KASSA_TOKEN = os.environ.get('YANDEX_KASSA_SECRET_KEY')
-# http://michael-borisov.com/2014/10/09/yandex-smtp-and-django/
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
-EMAIL_HOST = os.environ.get('EMAIL_SMTP')
-EMAIL_HOST_USER = os.environ.get('SHOP_EMAIL')
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-OSCAR_FROM_EMAIL = "Магазин 34 <" + os.environ.get('SHOP_EMAIL') + ">"
-EMAIL_HOST_PASSWORD = os.environ.get('SHOP_EMAIL_PASSWORD')
-
-SESSION_ENGINE =  'django.contrib.sessions.backends.signed_cookies' # "django.contrib.sessions.backends.file"
-
-SESSION_COOKIE_AGE = 600000
-
-
+SESSION_ENGINE =  'django.contrib.sessions.backends.signed_cookies' 
 
 ROOT_URLCONF = 'vlzb.urls'
-SITE_ID = 1
-# Internationalization
-# https://docs.djangoproject.com/en/3.0/topics/i18n/
-LANGUAGE_CODE = 'ru-ru'
-TIME_ZONE = 'Europe/Volgograd'
-USE_I18N = True
-USE_L10N = True
-USE_TZ = True
-WSGI_APPLICATION = 'vlzb.wsgi.application'
 
+WSGI_APPLICATION = 'vlzb.wsgi.application'
 
 
 INSTALLED_APPS = [
