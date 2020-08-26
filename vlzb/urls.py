@@ -23,7 +23,7 @@ urlpatterns = [
     path('', include(apps.get_app_config('oscar').urls[0])),  
 ] 
 
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+#if settings.DEBUG:
+#    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 

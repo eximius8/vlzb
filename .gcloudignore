@@ -5,6 +5,7 @@
 .git
 .gitignore
 script.sh
+vlzb/settings/development.py
 
 # Python pycache:
 __pycache__/

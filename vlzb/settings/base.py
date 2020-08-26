@@ -2,17 +2,9 @@ import os
 
 from oscar.defaults import *
 from .variables import *
+from .fixed import *
 
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-SESSION_ENGINE =  'django.contrib.sessions.backends.signed_cookies' 
-
-ROOT_URLCONF = 'vlzb.urls'
-
-WSGI_APPLICATION = 'vlzb.wsgi.application'
 
 
 INSTALLED_APPS = [
@@ -25,6 +17,9 @@ INSTALLED_APPS = [
 
     'django.contrib.sites',
     'django.contrib.flatpages',
+
+    # Additional apps
+    'storages', # pip install django-storages
 
     'oscar.config.Shop',
     'oscar.apps.analytics.apps.AnalyticsConfig',
@@ -65,51 +60,55 @@ INSTALLED_APPS = [
     'haystack',
     'treebeard',
     'sorl.thumbnail',
-    'django_tables2',  
-
-    # Additional apps
-    'storages', # pip install django-storages
+    'django_tables2',      
 ]
 
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    'oscar.apps.basket.middleware.BasketMiddleware',
-    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
-]
-
-AUTHENTICATION_BACKENDS = (
-    'oscar.apps.customer.auth_backends.EmailBackend',
-    'django.contrib.auth.backends.ModelBackend',
-)
 
 
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR,'vlzb/templates'), ],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
 
-                'oscar.apps.search.context_processors.search_form',
-                'oscar.apps.checkout.context_processors.checkout',
-                'oscar.apps.communication.notifications.context_processors.notifications',
-                'oscar.core.context_processors.metadata',
-            ],
-        },
-    },
-]
+
+if os.getenv('GAE_APPLICATION', None):
+    # Running on production App Engine, so connect to Google Cloud SQL using
+    # the unix socket at /cloudsql/<your-cloudsql-connection string>   
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'HOST': '/cloudsql/bezoder:us-central1:bezoder-mysql-micro',
+            'USER': MYSQL_USER,
+            'PASSWORD': MYSQL_USER_PASS,
+            'NAME': 'mag34',
+        }
+    }
+elif eval(os.getenv('DEBUG', "False")):
+    # Running locally so connect to either a local MySQL instance or connect to
+    # Cloud SQL via the proxy. To start the proxy via command line:
+    #
+    #     $ cloud_sql_proxy -instances=bezoder:us-central1:bezoder-mysql-micro=tcp:3306
+    #       No static after link required 
+    #       gsutil -m rsync -r ./static gs://ru-bezoder-static
+
+    #
+    # See https://cloud.google.com/sql/docs/mysql-connect-proxy
+    DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }    
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'HOST': '127.0.0.1',
+            'PORT': '3306',
+            'NAME': 'mag34',
+            'USER': MYSQL_USER,
+            'PASSWORD': MYSQL_USER_PASS,
+        }
+    }
+
+
+
 
 HAYSTACK_CONNECTIONS = {
     'default': {
@@ -156,7 +155,7 @@ OSCAR_PAYMENT_METHODS = (
 
 OSCAR_DASHBOARD_NAVIGATION += [
     {
-        'label': 'Shipping',
+        'label': 'Отправка',
         'children': [
             {
                 'label': 'Shipping',
@@ -172,59 +171,41 @@ STATICFILES_FINDERS = [
 ]
 
 
-# STATICFILES_DIRS = [    
-#     os.path.join(BASE_DIR, 'static'),
-# ]
-
-
-# if not os.getenv('GAE_APPLICATION', None):
-#     UPLOAD_ROOT = os.path.join(BASE_DIR, 'media/')    
-#     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
-
-#     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-#     STATIC_URL = '/static/'
-
-#     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-#     MEDIA_URL = '/media/'  
-    
-    
-#     DOWNLOAD_ROOT = os.path.join(BASE_DIR, "media")
-#     DOWNLOAD_URL = "/media/"
-    
-# else: 
-    # for prod environment
-
 DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 
-GS_PROJECT_ID = 'bezoder'
-GS_BUCKET_NAME = 'mag34'
-GS_STATIC_BUCKET_NAME = 'mag34'
-GS_MEDIA_BUCKET_NAME = 'mag34'
 
-STATIC_URL = 'https://storage.googleapis.com/{}/static/'.format(GS_STATIC_BUCKET_NAME)
+
+STATIC_URL = 'https://storage.googleapis.com/{}/static/'.format(GS_BUCKET_NAME)
 STATIC_ROOT = "static/"
 
-MEDIA_URL = 'https://storage.googleapis.com/{}/media/'.format(GS_MEDIA_BUCKET_NAME)
+MEDIA_URL = 'https://storage.googleapis.com/{}/media/'.format(GS_BUCKET_NAME)
 MEDIA_ROOT = "media/"
 
 UPLOAD_ROOT = 'media/uploads/'
 
-PROJECT_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)
-DOWNLOAD_ROOT = os.path.join(PROJECT_ROOT, "static/media/downloads")
+
+DOWNLOAD_ROOT = os.path.join(BASE_DIR, "static/media/downloads")
 DOWNLOAD_URL = STATIC_URL + "media/downloads"
 
 
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-#     }
-# }
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR,'vlzb/templates'), ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
 
-
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
-#         'LOCATION': '/tmp/memcached.sock',
-#     }
-# }
+                'oscar.apps.search.context_processors.search_form',
+                'oscar.apps.checkout.context_processors.checkout',
+                'oscar.apps.communication.notifications.context_processors.notifications',
+                'oscar.core.context_processors.metadata',
+            ],
+        },
+    },
+]
