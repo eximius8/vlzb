@@ -27,6 +27,9 @@ cloud_sql_proxy
 Dockerfile
 setup.py
 
+# file to set up policy for buckets
+policy.json
+
 
 # Thumbnails
 ._*

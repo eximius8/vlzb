@@ -30,6 +30,10 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 # Google Bucket settings
+# gsutil cors set policy.json gs://mag34
+# gsutil cors get gs://mag34 
+# gsutil iam ch allUsers:objectViewer gs://mag34
+# gsutil rsync -R static/  gs://mag34
 GS_PROJECT_ID = 'bezoder'
 GS_BUCKET_NAME = 'mag34'
 GS_STATIC_BUCKET_NAME = 'mag34'
