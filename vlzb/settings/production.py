@@ -3,11 +3,13 @@ from .base import *
 # https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 DEBUG = False
 
+# age of connect ion to db
+SESSION_COOKIE_AGE = 600000
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 CONN_MAX_AGE = 3600
 
-ALLOWED_HOSTS = ['.mag34.ru']
+ALLOWED_HOSTS = ['.mag34.ru', ]
 
 
 if os.getenv('GAE_APPLICATION', None):
@@ -19,7 +21,7 @@ if os.getenv('GAE_APPLICATION', None):
             'HOST': '/cloudsql/bezoder:us-central1:bezoder-mysql-micro',
             'USER': MYSQL_USER,
             'PASSWORD': MYSQL_USER_PASS,
-            'NAME': 'ru_bezoder_db',
+            'NAME': 'mag34',
         }
     }
 else:
@@ -37,7 +39,7 @@ else:
             'ENGINE': 'django.db.backends.mysql',
             'HOST': '127.0.0.1',
             'PORT': '3306',
-            'NAME': 'ru_bezoder_db',
+            'NAME': 'mag34',
             'USER': MYSQL_USER,
             'PASSWORD': MYSQL_USER_PASS,
         }

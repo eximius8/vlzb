@@ -8,6 +8,7 @@ __pycache__/
 
 # keep secret
 app.yaml
+bezoder.json
 
 # static files folder
 static/

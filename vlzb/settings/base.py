@@ -138,9 +138,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Oscar variables
-OSCAR_SHOP_NAME = 'ИП Бушнев'
-OSCAR_SHOP_TAGLINE = "Товары для праздника"
-OSCAR_DEFAULT_CURRENCY = 'RUB'
 OSCAR_REQUIRED_ADDRESS_FIELDS = ('first_name', 'last_name', 'postcode', 'state', 'phone_number')
 OSCAR_INITIAL_ORDER_STATUS = 'Заказ создан'
 OSCAR_INITIAL_LINE_STATUS = 'Заказ создан'
@@ -180,40 +177,42 @@ STATICFILES_FINDERS = [
 # ]
 
 
-if not os.getenv('GAE_APPLICATION', None):
-    UPLOAD_ROOT = os.path.join(BASE_DIR, 'media/')    
-    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+# if not os.getenv('GAE_APPLICATION', None):
+#     UPLOAD_ROOT = os.path.join(BASE_DIR, 'media/')    
+#     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
-    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-    STATIC_URL = '/static/'
+#     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+#     STATIC_URL = '/static/'
 
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-    MEDIA_URL = '/media/'  
+#     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+#     MEDIA_URL = '/media/'  
     
     
-    DOWNLOAD_ROOT = os.path.join(BASE_DIR, "media")
-    DOWNLOAD_URL = "/media/"
+#     DOWNLOAD_ROOT = os.path.join(BASE_DIR, "media")
+#     DOWNLOAD_URL = "/media/"
     
-else: 
+# else: 
     # for prod environment
-    DEFAULT_FILE_STORAGE = 'gcloud.GoogleCloudMediaFileStorage'
-    STATICFILES_STORAGE = 'gcloud.GoogleCloudStaticFileStorage'
 
-    GS_PROJECT_ID = 'bezoder'
-    GS_STATIC_BUCKET_NAME = 'mag34'
-    GS_MEDIA_BUCKET_NAME = 'mag34'
+DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 
-    STATIC_URL = 'https://storage.googleapis.com/{}/'.format(GS_STATIC_BUCKET_NAME)
-    STATIC_ROOT = "static/"
+GS_PROJECT_ID = 'bezoder'
+GS_BUCKET_NAME = 'mag34'
+GS_STATIC_BUCKET_NAME = 'mag34'
+GS_MEDIA_BUCKET_NAME = 'mag34'
 
-    MEDIA_URL = 'https://storage.googleapis.com/{}/'.format(GS_MEDIA_BUCKET_NAME)
-    MEDIA_ROOT = "media/"
+STATIC_URL = 'https://storage.googleapis.com/{}/static/'.format(GS_STATIC_BUCKET_NAME)
+STATIC_ROOT = "static/"
 
-    UPLOAD_ROOT = 'media/uploads/'
+MEDIA_URL = 'https://storage.googleapis.com/{}/media/'.format(GS_MEDIA_BUCKET_NAME)
+MEDIA_ROOT = "media/"
 
-    PROJECT_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)
-    DOWNLOAD_ROOT = os.path.join(PROJECT_ROOT, "static/media/downloads")
-    DOWNLOAD_URL = STATIC_URL + "media/downloads"
+UPLOAD_ROOT = 'media/uploads/'
+
+PROJECT_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)
+DOWNLOAD_ROOT = os.path.join(PROJECT_ROOT, "static/media/downloads")
+DOWNLOAD_URL = STATIC_URL + "media/downloads"
 
 
 # CACHES = {

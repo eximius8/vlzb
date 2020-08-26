@@ -4,8 +4,9 @@ import os
 SECRET_KEY = os.environ.get('SECRET_KEY')
 KASSA_ID = os.environ.get('YANDEX_KASSA_ACC_ID')
 KASSA_TOKEN = os.environ.get('YANDEX_KASSA_SECRET_KEY')
-# http://michael-borisov.com/2014/10/09/yandex-smtp-and-django/
 
+# Email settings
+# http://michael-borisov.com/2014/10/09/yandex-smtp-and-django/
 EMAIL_HOST = os.environ.get('EMAIL_SMTP')
 EMAIL_HOST_USER = os.environ.get('SHOP_EMAIL')
 EMAIL_PORT = 587
@@ -25,7 +26,18 @@ USE_L10N = True
 USE_TZ = True
 
 
-SESSION_COOKIE_AGE = 600000
+BASE_URL = 'https://mag34.ru'
 
-# age of connect ion to db
-CONN_MAX_AGE = 1000
+
+# SQL settings
+MYSQL_USER = os.environ.get('MYSQL_USER')
+MYSQL_USER_PASS = os.environ.get('MYSQL_USER_PASS')
+MYSQL_DB_NAME = os.environ.get('MYSQL_DB_NAME')
+
+# GCP credentials 
+GOOGLE_APPLICATION_CREDENTIALS = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+
+# Oscar variables
+OSCAR_SHOP_NAME = 'ИП Бушнев'
+OSCAR_SHOP_TAGLINE = "Лучшая электроника"
+OSCAR_DEFAULT_CURRENCY = 'RUB'
