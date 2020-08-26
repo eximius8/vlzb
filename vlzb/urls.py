@@ -13,7 +13,7 @@ urlpatterns = [
     # The Django admin is not officially supported; expect breakage.
     # Nonetheless, it's often useful for debugging.
 
-    path('admin/', admin.site.urls),   
+    path(settings.SECRET_ADMIN_URL, admin.site.urls),   
 
     # paypal
    # path('checkout/paypal/', include('paypal.express.urls')),

@@ -1,6 +1,7 @@
 from .base import *
 
 # https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
+
 DEBUG = False
 
 # age of connect ion to db
@@ -9,12 +10,12 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 CONN_MAX_AGE = 3600
 
-ALLOWED_HOSTS = ['.mag34.ru', ]
+ALLOWED_HOSTS = ['.mag34.ru',]
 
 
 if os.getenv('GAE_APPLICATION', None):
     # Running on production App Engine, so connect to Google Cloud SQL using
-    # the unix socket at /cloudsql/<your-cloudsql-connection string>
+    # the unix socket at /cloudsql/<your-cloudsql-connection string>   
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
@@ -34,6 +35,7 @@ else:
 
     #
     # See https://cloud.google.com/sql/docs/mysql-connect-proxy
+
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',

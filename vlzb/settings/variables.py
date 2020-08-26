@@ -2,6 +2,7 @@ import os
 
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_ADMIN_URL = os.environ.get('SECRET_ADMIN_URL') 
 KASSA_ID = os.environ.get('YANDEX_KASSA_ACC_ID')
 KASSA_TOKEN = os.environ.get('YANDEX_KASSA_SECRET_KEY')
 
@@ -34,8 +35,11 @@ MYSQL_USER = os.environ.get('MYSQL_USER')
 MYSQL_USER_PASS = os.environ.get('MYSQL_USER_PASS')
 MYSQL_DB_NAME = os.environ.get('MYSQL_DB_NAME')
 
-# GCP credentials 
-GOOGLE_APPLICATION_CREDENTIALS = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+# GCP credentials
+if os.getenv('GAE_APPLICATION', None):
+    GOOGLE_APPLICATION_CREDENTIALS = BASE_DIR + '/' + os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+else:
+    GOOGLE_APPLICATION_CREDENTIALS = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
 
 # Oscar variables
 OSCAR_SHOP_NAME = 'ИП Бушнев'
