@@ -5,4 +5,4 @@ class OrderNumberGenerator(CoreOrderNumberGenerator):
 
     def order_number(self, basket=None):
         num = super().order_number(basket)
-        return "vlzs-%s" % num
+        return "vlz-%s" % num
