@@ -136,35 +136,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Oscar variables
-OSCAR_REQUIRED_ADDRESS_FIELDS = ('first_name', 'last_name', 'postcode', 'state', 'phone_number')
-OSCAR_INITIAL_ORDER_STATUS = 'Заказ создан'
-OSCAR_INITIAL_LINE_STATUS = 'Заказ создан'
-OSCAR_ORDER_STATUS_PIPELINE = {
-                                'Заказ создан': ('Обработка', 'Отменен',),
-                                'Обработка': ('Завершен', 'Отменен',),
-                                'Отменен': (),
-                                }
-
-OSCAR_PAYMENT_METHODS = (
-    ('cod', 'Оплата наличными при получении'),    
-    ('yandex_kassa', 'Оплата онлайн'),
-)
-
-
-
-OSCAR_DASHBOARD_NAVIGATION += [
-    {
-        'label': 'Отправка',
-        'children': [
-            {
-                'label': 'Shipping',
-                'url_name': 'dashboard:shipping-method-list',
-            },
-         ]
-    },
-]
-
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',

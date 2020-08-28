@@ -53,3 +53,28 @@ OSCAR_SHOP_NAME = 'ИП Бушнев'
 OSCAR_SHOP_TAGLINE = "Лучшая электроника"
 OSCAR_DEFAULT_CURRENCY = 'RUB'
 OSCAR_FROM_EMAIL = "Магазин 34 <" + EMAIL_HOST_USER + ">"
+OSCAR_REQUIRED_ADDRESS_FIELDS = ('first_name', 'last_name', 'postcode', 'state', 'phone_number')
+OSCAR_INITIAL_ORDER_STATUS = 'Заказ создан'
+OSCAR_INITIAL_LINE_STATUS = 'Заказ создан'
+OSCAR_ORDER_STATUS_PIPELINE = {
+                                'Заказ создан': ('Обработка', 'Отменен',),
+                                'Обработка': ('Завершен', 'Отменен',),
+                                'Отменен': (),
+                                }
+
+OSCAR_PAYMENT_METHODS = (
+    ('cod', 'Оплата наличными при получении'),    
+    ('yandex_kassa', 'Оплата онлайн'),
+)
+
+OSCAR_DASHBOARD_NAVIGATION += [
+    {
+        'label': 'Отправка',
+        'children': [
+            {
+                'label': 'Shipping',
+                'url_name': 'dashboard:shipping-method-list',
+            },
+         ]
+    },
+]

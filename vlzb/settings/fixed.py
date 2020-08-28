@@ -1,5 +1,6 @@
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
 AUTHENTICATION_BACKENDS = (
     'oscar.apps.customer.auth_backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',

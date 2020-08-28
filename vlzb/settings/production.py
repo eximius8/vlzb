@@ -11,6 +11,6 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 CONN_MAX_AGE = 3600
 
-ALLOWED_HOSTS = ['.mag34.ru','www.mag34.ru']
+ALLOWED_HOSTS = ['.mag34.ru',]
 
 
