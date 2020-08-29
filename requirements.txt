@@ -1,9 +1,4 @@
 sorl-thumbnail
-#google-auth
-#google-api-core
-#google-api-python-client
-#google-auth-httplib2==0.0.3
-#googleapis-common-protos==1.52.*
 django-oscar
 pycountry
 yandex_checkout
@@ -11,9 +6,3 @@ django-storages
 google-cloud-storage
 mysqlclient
 django-allauth
-#grpcio-tools
-#firebase-admin
-#pylibmc
-#django-oscar-paypal
-
-
