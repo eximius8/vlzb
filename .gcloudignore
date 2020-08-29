@@ -36,9 +36,11 @@ policy.json
 # No idea
 .table
 
-
+# folders
 media/
 static/
+cache/
+images/
 
 
 # Files that might appear on external disk
