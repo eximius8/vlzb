@@ -10,6 +10,7 @@ yandex_checkout
 django-storages
 google-cloud-storage
 mysqlclient
+django-allauth
 #grpcio-tools
 #firebase-admin
 #pylibmc

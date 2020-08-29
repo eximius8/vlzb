@@ -48,6 +48,13 @@ USE_L10N = True
 USE_TZ = True
 BASE_URL = 'https://mag34.ru'
 
+# allauth settings
+# https://django-allauth.readthedocs.io/en/latest/configuration.html
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+
+
 # Oscar variables
 OSCAR_SHOP_NAME = 'ИП Бушнев'
 OSCAR_SHOP_TAGLINE = "Лучшая электроника"
@@ -67,14 +74,3 @@ OSCAR_PAYMENT_METHODS = (
     ('yandex_kassa', 'Оплата онлайн'),
 )
 
-OSCAR_DASHBOARD_NAVIGATION += [
-    {
-        'label': 'Отправка',
-        'children': [
-            {
-                'label': 'Shipping',
-                'url_name': 'dashboard:shipping-method-list',
-            },
-         ]
-    },
-]

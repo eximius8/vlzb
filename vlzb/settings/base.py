@@ -4,9 +4,6 @@ from oscar.defaults import *
 from .variables import *
 from .fixed import *
 
-
-
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -20,6 +17,15 @@ INSTALLED_APPS = [
 
     # Additional apps
     'storages', # pip install django-storages
+
+    'allauth', # pip install django-allauth
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.vk',
+    'allauth.socialaccount.providers.odnoklassniki',
+    'allauth.socialaccount.providers.mailru',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.facebook',
 
     'oscar.config.Shop',
     'oscar.apps.analytics.apps.AnalyticsConfig',
@@ -107,9 +113,6 @@ else:
         }
     }
 
-
-
-
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
@@ -136,6 +139,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -148,15 +153,15 @@ STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 
 
 STATIC_URL = 'https://storage.googleapis.com/{}/static/'.format(GS_BUCKET_NAME)
-STATIC_ROOT = "static/"
+#STATIC_ROOT = "static/"
 
 MEDIA_URL = 'https://storage.googleapis.com/{}/media/'.format(GS_BUCKET_NAME)
-MEDIA_ROOT = "media/"
+#MEDIA_ROOT = "media/"
 
-UPLOAD_ROOT = 'media/uploads/'
+#UPLOAD_ROOT = 'media/uploads/'
 
 
-DOWNLOAD_ROOT = os.path.join(BASE_DIR, "static/media/downloads")
+#DOWNLOAD_ROOT = os.path.join(BASE_DIR, "static/media/downloads")
 DOWNLOAD_URL = STATIC_URL + "media/downloads"
 
 
@@ -178,5 +183,18 @@ TEMPLATES = [
                 'oscar.core.context_processors.metadata',
             ],
         },
+    },
+]
+
+
+OSCAR_DASHBOARD_NAVIGATION += [
+    {
+        'label': 'Отправка',
+        'children': [
+            {
+                'label': 'Shipping',
+                'url_name': 'dashboard:shipping-method-list',
+            },
+         ]
     },
 ]
